@@ -45,13 +45,13 @@ void MainMenu::Update(sf::RenderWindow* window)
 	{
 		this->selected += 1;
 	}
-	if (this->selected > 1)
+	if (this->selected > 2)
 	{
 		this->selected = 0;
 	}
 	if (this->selected < 0)
 	{
-		this->selected = 1;
+		this->selected = 2;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Return))

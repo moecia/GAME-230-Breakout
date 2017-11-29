@@ -1,6 +1,7 @@
 #pragma once
 #include "GameState.h"
 #include "Score.h" 
+#include "SoundEffectManager.h"
 class GameOver : public State
 {
 public:
@@ -11,4 +12,5 @@ public:
 private:
 	sf::Text* gameOverText;
 	bool enterKey;
+	SoundEffectManager *SEManager;
 };
