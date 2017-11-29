@@ -21,7 +21,7 @@ void MainGame::Initialize(sf::RenderWindow* window)
 
 	this->ballVelocity = new sf::Text("Ball Speed: " + std::to_string(difficulty), *font, 32U);
 	this->ballVelocity->setFillColor(sf::Color::White);
-	this->ballVelocity->setPosition((window->getSize().x - this->lives->getGlobalBounds().width)/2 , 0);
+	this->ballVelocity->setPosition((window->getSize().x - this->lives->getGlobalBounds().width)/ 2 , 0);
 
 	manager = new EntityManager();
 
@@ -32,11 +32,22 @@ void MainGame::Initialize(sf::RenderWindow* window)
 	this->manager->Add("Ball", new Ball(this->lives, manager, SEManager));
 	// Add brick
 	MapGenerater();
+
+	this->brickLeft = new sf::Text("Brick Left: " + std::to_string(brickCount), *font, 32U);
+	this->brickLeft->setFillColor(sf::Color::White);
+	this->brickLeft->setPosition((window->getSize().x - this->lives->getGlobalBounds().width) / 2, 32);
 }
 void MainGame::Update(sf::RenderWindow* window)
 {
-	this->brickCount -= bricksDestroyed;
-	bricksDestroyed = 0;
+	if (bricksDestroyed != 0)
+	{
+		this->brickCount -= bricksDestroyed;
+		this->SEManager->PlaySoundEffect(DestroySound);
+		this->score->AddScore();
+		bricksDestroyed = 0;
+	}
+	
+	this->brickLeft->setString("Brick Left: " + std::to_string(brickCount));
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
 	{
@@ -48,24 +59,11 @@ void MainGame::Update(sf::RenderWindow* window)
 
 	if (this->brickCount <= 0)
 	{
-		if (this->brickCount != this->lastBrickCount)
-		{
-			this->SEManager->PlaySoundEffect(DestroySound);
-			this->score->AddScore();
-			this->brickCount = this->lastBrickCount;
-		}
 		gameOver = false;
 		difficulty += .25f;
 		levelIndex += 1;
 		_currentState.SetState(new WinScreen());
 		return;
-	}
-
-	if (this->brickCount != this->lastBrickCount)
-	{
-		this->SEManager->PlaySoundEffect(DestroySound);
-		this->score->AddScore();
-		this->brickCount = this->lastBrickCount;
 	}
 
 	if (!this->manager->Update(window))
@@ -86,6 +84,7 @@ void MainGame::Render(sf::RenderWindow* window)
 	window->draw(*this->lives);
 	window->draw(*this->score);
 	window->draw(*this->ballVelocity);
+	window->draw(*this->brickLeft); 
 }
 void MainGame::Destroy(sf::RenderWindow* window)
 {
@@ -95,19 +94,29 @@ void MainGame::Destroy(sf::RenderWindow* window)
 	delete this->manager;
 	delete this->SEManager;
 	delete this->ballVelocity;
+	delete this->brickLeft;
 }
 
 void MainGame::MapGenerater()
 {
-	if (levelIndex == 1)
+	switch (levelIndex % 4)
 	{
+	case 1:
 		this->brickCol = 1;
 		this->brickRow = 1;
-	}
-	else
-	{
-		this->brickCol = rand() % 16 + 1;
-		this->brickRow = rand() % 10 + 1;
+		break;
+	case 2:
+		this->brickCol = 16;
+		this->brickRow = 6;
+		break;
+	case 3:
+		this->brickCol = 16;
+		this->brickRow = 8;
+		break;
+	case 0:
+		this->brickCol = 16;
+		this->brickRow = 10;
+		break;
 	}
 	for (int y = 0; y < brickRow; y++)
 	{
@@ -134,8 +143,6 @@ void MainGame::MapGenerater()
 	for (int i = 0; i < rand()%10 + 1; i++)
 	{
 		this->manager->Add("MovingBrick_" +i, new Brick(i*64 + 32, 512, movingBrick));
+		brickCount++;
 	}
-
-	this->lastBrickCount = brickCount;
-	
 }

@@ -14,6 +14,8 @@ Brick::Brick(float x, float y, int brickType)
 		break;
 	case movingBrick:
 		this->setColor(sf::Color::White);
+		this->health = 2;
+		this->maxHealth = 2;
 		break;
 	case invincibleBrick:
 		this->setColor(sf::Color::Yellow);
@@ -48,6 +50,12 @@ bool Brick::Update(sf::RenderWindow* window)
 		}
 		break;
 	case movingBrick:
+		if (this->maxHealth - this->health == 1)
+		{
+			color.r = 128;
+			color.b = 128;
+			this->setColor(color);
+		}
 		if (this->getPosition().x + this->getGlobalBounds().width >= 1280)
 		{
 			this->movingLeft = true;
@@ -67,7 +75,7 @@ bool Brick::Update(sf::RenderWindow* window)
 			this->move(2.5f, 0);
 		break;
 	}
-	if (this->health <= 0 && (this->brickType == normalBrick || this->brickType == invisibleBrick))
+	if (this->health <= 0 && this->brickType != invincibleBrick)
 	{
 		bricksDestroyed += 1;
 		this->Destroy();

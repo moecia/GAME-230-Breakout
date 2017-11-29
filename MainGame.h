@@ -22,10 +22,10 @@ private:
 	Score* score;
 	sf::Font* font;
 	sf::Text* ballVelocity;
+	sf::Text* brickLeft;
 	EntityManager* manager;
 	int brickCol;
 	int brickRow;
 	int brickCount;
-	int lastBrickCount;
 };
 extern int finalScore;
